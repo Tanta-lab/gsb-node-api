@@ -21,7 +21,7 @@ const getReports = async (req, res) => {
 
         const response = rows.map(report => ({
             id: report.id,
-            date: report.date,  // Y-m-d auto
+            date: report.date,
             motive: report.motif,
             'balance sheet': report.bilan
         }));
@@ -34,20 +34,20 @@ const getReports = async (req, res) => {
         res.status(500).json({ error: error });
     }
 };
+
 const getReportById = async (req, res) => {
     const { id } = req.params;
 
     try {
-        // Rapport + visiteur + médecin en 1 query
         const [report] = await sequelize.query(`
-      SELECT r.id, r.date, r.motif, r.bilan, 
-             v.id as v_id, v.nom as v_nom, v.prenom as v_prenom,
-             m.id as m_id, m.nom as m_nom, m.prenom as m_prenom
-      FROM rapport r
-      LEFT JOIN visiteur v ON r.idVisiteur = v.id
-      LEFT JOIN medecin m ON r.idMedecin = m.id
-      WHERE r.id = ?
-    `, {
+            SELECT r.id, r.date, r.motif, r.bilan, r.idMedecin,
+                   v.id as v_id, v.nom as v_nom, v.prenom as v_prenom,
+                   m.id as m_id, m.nom as m_nom, m.prenom as m_prenom
+            FROM rapport r
+                     LEFT JOIN visiteur v ON r.idVisiteur = v.id
+                     LEFT JOIN medecin m ON r.idMedecin = m.id
+            WHERE r.id = ?
+        `, {
             replacements: [id],
             type: sequelize.QueryTypes.SELECT
         });
@@ -56,11 +56,24 @@ const getReportById = async (req, res) => {
             return res.status(404).json({ error: 'Rapport non trouvé' });
         }
 
+        const [gift] = await sequelize.query(`
+            SELECT o.idMedicament, o.quantite
+            FROM offrir o
+            WHERE o.idRapport = ?
+            LIMIT 1
+        `, {
+            replacements: [id],
+            type: sequelize.QueryTypes.SELECT
+        });
+
         const response = {
             id: report.id,
             date: report.date,
             motive: report.motif,
             'balance sheet': report.bilan,
+            doctorId: report.idMedecin,
+            medicineId: gift?.idMedicament || '',
+            quantity: gift?.quantite || 1,
             visitor: {
                 id: report.v_id,
                 lastname: report.v_nom,
@@ -107,7 +120,6 @@ const createReport = async (req, res) => {
 
         const medecin = doctorId ? await Medecin.findByPk(doctorId) : null;
 
-        // INSERT rapport
         const [reportId] = await sequelize.query(
             'INSERT INTO rapport (date, motif, bilan, idVisiteur, idMedecin) VALUES (:date, :motif, :bilan, :idVisiteur, :idMedecin)',
             {
@@ -122,7 +134,6 @@ const createReport = async (req, res) => {
             }
         );
 
-        // INSERT offrir
         await sequelize.query(
             'INSERT INTO offrir (idRapport, idMedicament, quantite) VALUES (:idRapport, :idMedicament, :quantite) ON DUPLICATE KEY UPDATE quantite = VALUES(quantite)',
             {
@@ -142,4 +153,76 @@ const createReport = async (req, res) => {
     }
 };
 
-module.exports = { getReports, getReportById, createReport };
+const updateReport = async (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Token manquant ou incorrect' });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const tokenIsValid = jwtService.validateToken(token);
+    const tokenIsBlacklisted = jwtService.isBlacklisted(token);
+    const claims = jwtService.getClaims(token);
+    const visiteurId = claims?.id;
+
+    const visiteur = await Visiteur.findByPk(visiteurId);
+    if (!visiteur || !tokenIsValid || tokenIsBlacklisted) {
+        return res.status(401).json({ error: 'Token manquant ou incorrect ou visiteur inexistant' });
+    }
+
+    const { id } = req.params;
+    const { balanceSheet, motive, date, medicineId, quantity } = req.body;
+
+    try {
+        const report = await Rapport.findByPk(id);
+
+        if (!report) {
+            return res.status(404).json({ error: 'Rapport non trouvé' });
+        }
+
+        if (report.idVisiteur !== visiteurId) {
+            return res.status(403).json({ error: 'Accès refusé' });
+        }
+
+        if (medicineId) {
+            const medicament = await Medicament.findByPk(medicineId);
+            if (!medicament) {
+                return res.status(400).json({ error: "Ce médicament n'existe pas" });
+            }
+        }
+
+        await sequelize.query(
+            'UPDATE rapport SET date = :date, motif = :motif, bilan = :bilan WHERE id = :id',
+            {
+                replacements: {
+                    id,
+                    date,
+                    motif: motive,
+                    bilan: balanceSheet
+                },
+                type: sequelize.QueryTypes.UPDATE
+            }
+        );
+
+        if (medicineId && quantity) {
+            await sequelize.query(
+                'INSERT INTO offrir (idRapport, idMedicament, quantite) VALUES (:idRapport, :idMedicament, :quantite) ON DUPLICATE KEY UPDATE idMedicament = VALUES(idMedicament), quantite = VALUES(quantite)',
+                {
+                    replacements: {
+                        idRapport: id,
+                        idMedicament: medicineId,
+                        quantite: quantity
+                    },
+                    type: sequelize.QueryTypes.INSERT
+                }
+            );
+        }
+
+        res.json({ data: 'Le rapport a été modifié' });
+    } catch (error) {
+        console.error('updateReport:', error.message);
+        res.status(500).json({ error: 'Erreur modification' });
+    }
+};
+
+module.exports = { getReports, getReportById, createReport, updateReport };

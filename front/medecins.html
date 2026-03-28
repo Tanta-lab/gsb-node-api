@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Médecins GSB</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #111;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        input, button {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background: #111;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .muted {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .error {
+            color: #b00020;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div><strong>GSB</strong> — Médecins</div>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a href="rapports.html" style="color:white; text-decoration:none;">Mes rapports</a>
+        <button id="logoutBtn">Déconnexion</button>
+    </div>
+</header>
+
+<div class="container">
+    <div class="toolbar">
+        <input type="text" id="searchInput" placeholder="Rechercher par nom ou prénom" />
+        <button id="searchBtn">Rechercher</button>
+        <button id="reloadBtn">Réinitialiser</button>
+    </div>
+
+    <div class="pagination">
+        <button id="prevBtn">Précédent</button>
+        <span id="pageInfo">Page 1 / 1</span>
+        <button id="nextBtn">Suivant</button>
+    </div>
+
+    <p id="error" class="error"></p>
+    <div id="medecinsList" class="grid"></div>
+</div>
+
+<script src="front.js"></script>
+</body>
+</html>

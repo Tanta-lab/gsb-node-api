@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rapport</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #111;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .error {
+            color: #b00020;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            color: #0a7a2f;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        input, textarea, button {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 16px;
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            background: #111;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div id="formTitle"><strong>GSB</strong> — Nouveau rapport</div>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a id="backToDoctorLink" href="#">Retour médecin</a>
+        <a href="rapports.html">Mes rapports</a>
+        <button id="logoutBtn" style="width:auto; margin:0;">Déconnexion</button>
+    </div>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h1 id="formHeading">Créer un rapport de visite</h1>
+
+        <p id="error" class="error"></p>
+        <p id="success" class="success"></p>
+
+        <form id="reportForm">
+            <label for="date">Date</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="motive">Motif</label>
+            <input type="text" id="motive" name="motive" required>
+
+            <label for="balanceSheet">Bilan</label>
+            <textarea id="balanceSheet" name="balanceSheet" required></textarea>
+
+            <label for="medicineId">Identifiant médicament</label>
+            <input type="text" id="medicineId" name="medicineId" placeholder="Ex : 3MYC7" required>
+
+            <label for="quantity">Quantité offerte</label>
+            <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+
+            <button type="submit" id="submitBtn">Enregistrer</button>
+        </form>
+    </div>
+</div>
+
+<script src="front.js"></script>
+</body>
+</html>

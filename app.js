@@ -1,8 +1,15 @@
-// app.js
+// front.js
 const express = require('express');
 const app = express();
 app.use(express.json());
+const cors = require('cors');
 
+app.use(cors({
+    origin: 'http://localhost:5500'
+}));
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('', require('./routes/auth'));
 app.use('/medecins', require('./routes/medecin'));

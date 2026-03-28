@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détail médecin</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            color: #111;
+        }
+
+        header {
+            background: #111;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .error {
+            color: #b00020;
+            margin-bottom: 20px;
+        }
+
+        .report {
+            border-top: 1px solid #eee;
+            padding-top: 12px;
+            margin-top: 12px;
+        }
+
+        button {
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: none;
+            background: #111;
+            color: white;
+            cursor: pointer;
+        }
+
+        a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .action-link {
+            display: inline-block;
+            background: #111;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div><strong>GSB</strong> — Détail médecin</div>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <a href="medecins.html">Retour médecins</a>
+        <a href="rapports.html">Mes rapports</a>
+        <button id="logoutBtn">Déconnexion</button>
+    </div>
+</header>
+
+<div class="container">
+    <p id="error" class="error"></p>
+
+    <div id="doctorCard" class="card"></div>
+
+    <div class="card">
+        <h2>Actions</h2>
+        <div class="actions">
+            <a id="newReportLink" class="action-link" href="#">Organiser une visite</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Rapports de visite</h2>
+        <div id="reportsList"></div>
+    </div>
+</div>
+
+<script src="front.js"></script>
+</body>
+</html>
