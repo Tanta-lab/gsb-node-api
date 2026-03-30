@@ -1,83 +1,59 @@
-## 1 . Installation du projet
-Prerequis avoir node et docker installer sur son post
+Projet GSB — Gestion des rapports de visite
 
-il faut cloner le projet
+-- Description --
 
-'git clone https://github.com/samir7500/gsb-node-api-samir.git'
+Application permettant à un visiteur médical de :
+	•	consulter les médecins
+	•	consulter les rapports de visite
+	•	créer un rapport
+	•	modifier un rapport
 
-Une fois le projet cloner il faut installer les dependences
+-- Technologies --
 
-'cd [repertoire-du-projet]'
+	•	Node.js (Express)
+	•	MySQL (Docker)
+	•	JavaScript (front simple)
 
-Renommez le fichier .env en .env.test
+ -- Installation --
+ 
+1. Cloner le projet :
+   git clone https://github.com/Tanta-lab/gsb-node-api.git
+   cd gsb-node-api
+   
+2. Installer les dépendances :
+   npm install
+   
+3. Lancer Docker :
+   docker compose up -d
+   
+4. Lancer le serveur
+   npm start
 
-'npm install'
+-- Lancer le front --
 
-lancez la commande suivante 
+Ouvrir le fichier :
 
-'docker compose up -d'
+front/index.html (avec Live Server ou navigateur)
 
-2 containners seront  créer
- - gsbDb : un container mysql 
- - gsbAdminer : un container adminer pour consulter le bdd via une interface
+Identifiants de test :
+   login: aribiA
+   password: aaaa
 
-sur un navigateur saisir l'url suivante:
+-- Routes principales --
 
-'localhost:8080'
+	•	POST /connexion
+	•	GET /medecins
+	•	GET /medecins/:id
+	•	GET /rapports
+	•	POST /rapports
+	•	PUT /rapports/:id
 
-saisir les information suivantes
+-- Fonctionnalités --
 
-dialect:mysql
-host:gsbDb
-username:user_gsb
-password:password_gsb
-
-et validez 
-
-la bdd 'gsb_frais' devrait exister
-
-depuis cette interface vous pouvez importez la bdd gsb presente dans le dossier 'database'
-
-## 2. démarrage du projet 
-
-Lancez la commande:
-'npm start'
-le projet est lancé et pouvez acceder au routes suivantes:
-
-- http://localhost:3000/connexion : POST
-  {
-  "login": "aribiA",
-  "password": "aaaa"
-  }
-
-- http://localhost:3000/deconnexion : GET
- "headers: Authorization: Bearer [token]"
-
-- http://localhost:3000/medecins : GET
-- http://localhost:3000/api/medicins/:id : GET
-- http://localhost:3000/api/medicaments : GET
-
-- http://localhost:3000/rapports : GET
-- http://localhost:3000/rapports/:id : GET
-- http://localhost:3000/rapports : POST
-  "headers: Authorization: Bearer [token]"
-  {
-      "balanceSheet": "Bilan ok",
-      "motive": "Visite routine",
-      "doctorId": 1,
-      "date": "2026-03-14",
-      "medicineId": "3MYC7",
-      "quantity": 2
-  }
-## information supplementaires 
-Pour le listing des medecins on peut rajouter les parametres suivants dans la requete:
-- page: le nombre d'élément par page
-- element : le nombre d'elements de la page
-- name : par nom ou prenom du docteur
-
-
-Pour le listing des rapport on peut rajouter les parametres suivants dans la requete:
-- page: le nombre d'élément par page
-- element : le nombre d'elements de la page
-
-J'ai mis en place en heroku(version en ligne) si vous souhaiter que je le demmarre vous pouvez m'envoyer un sms
+	•	Authentification (JWT)
+	•	Liste des médecins (pagination + recherche)
+	•	Détail d’un médecin
+	•	Consultation des rapports
+	•	Création d’un rapport
+	•	Modification d’un rapport
+	•	Filtrage des rapports par date
